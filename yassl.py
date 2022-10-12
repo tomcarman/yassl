@@ -4,7 +4,9 @@ from dotenv import dotenv_values
 import json
 import csv
 import requests
-requests.packages.urllib3.disable_warnings() 
+requests.packages.urllib3.disable_warnings()
+from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
+
 
 @dataclass
 class FieldDefinition:
@@ -318,6 +320,8 @@ def build_xlsx(all_objects_data):
         ws.append(get_header_array())
 
         for row in all_objects_data[object_name]:
+            for cell in row:
+                cell = ILLEGAL_CHARACTERS_RE.sub(r'', cell)
             ws.append(row)
 
     wb.save('output.xlsx')
