@@ -1,3 +1,4 @@
+from simple_salesforce import Salesforce
 from dataclasses import dataclass, asdict
 from openpyxl import Workbook
 from dotenv import dotenv_values
@@ -122,23 +123,16 @@ def create_object_definition(data: str, metadata_type: str):
 
 def authenticate(config):
 
-        data = {'grant_type' : 'password',
-                'client_id' : config['CLIENT_KEY'],
-                'client_secret' : config['CLIENT_SECRET'],
-                'username' : config['USERNAME'],
-                'password' : config['PASSWORD']}
+        sf = Salesforce(username=config['USERNAME'], password=config['PASSWORD'],
+                 consumer_key= config['CLIENT_KEY'], consumer_secret= config['CLIENT_SECRET'], domain='test')
 
-        r = requests.post(url=config['AUTH_URL'], data=data, verify=False)
         
-        access_token = r.json().get('access_token')
-        instance_url = r.json().get('instance_url')
-
-        return access_token, instance_url
-
+        # return access_token, instance_url
+        return sf.session_id, sf.base_url
 
 def get_sobjects():
     
-    GET_OBJECTS_METHOD = '/services/data/v55.0/sobjects/'
+    GET_OBJECTS_METHOD = 'sobjects/'
 
     url = INSTANCE_URL+GET_OBJECTS_METHOD
     headers = {'Authorization' : 'Bearer ' + ACCESS_TOKEN}
@@ -214,7 +208,7 @@ def add_object_details(object_definitions :list[ObjectDefinition]):
 
 def get_sobject_describe(object_name: str):
 
-    GET_DESCRIBE = f'/services/data/v55.0/sobjects/{object_name}/describe'
+    GET_DESCRIBE = f'sobjects/{object_name}/describe'
 
     headers = {'Authorization' : 'Bearer ' + ACCESS_TOKEN}
     url_describe = INSTANCE_URL+GET_DESCRIBE

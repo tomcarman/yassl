@@ -2,3 +2,4 @@ dataclasses
 openpyxl
 python-dotenv
 requests
+simple_salesforce
